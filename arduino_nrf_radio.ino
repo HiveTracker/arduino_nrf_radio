@@ -1,11 +1,8 @@
-
-
 #include "radio_config.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include "radio_config.h"
-#include "nordic_common.h"
 #include "nrf.h"
 
 #define NRF_SUCCESS 1
