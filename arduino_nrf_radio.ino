@@ -27,11 +27,9 @@ void send_packet()
     // wait
   }
   Serial.println("The packet was sent");
-
   NRF_RADIO->EVENTS_DISABLED = 0U;
   // Disable radio
   NRF_RADIO->TASKS_DISABLE = 1U;
-
   while (NRF_RADIO->EVENTS_DISABLED == 0U)
   {
     // wait
@@ -49,10 +47,8 @@ void clock_initialization()
   NRF_CLOCK->LFCLKSRC            = (CLOCK_LFCLKSRC_SRC_Xtal << CLOCK_LFCLKSRC_SRC_Pos);
   NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
   NRF_CLOCK->TASKS_LFCLKSTART    = 1;
-
   while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0)
   {
-    // Do nothing.
   }
 }
 
@@ -60,6 +56,11 @@ void clock_initialization()
 
 void setup() {
   Serial.begin(9600);
+  while (!Serial)
+  {
+    delay(500);
+  }
+  delay(500);
   uint32_t err_code = NRF_SUCCESS;
   clock_initialization();
   // Set radio configuration parameters
@@ -68,12 +69,17 @@ void setup() {
   NRF_RADIO->PACKETPTR = (uint32_t)&packet;
 }
 
-void loop() {
+void loop()
+{
+  packet = millis();
   if (packet != 0)
   {
     send_packet();
-    Serial.println("The contents of the package was %u");//, (unsigned int)packet));
+    Serial.print("The contents of the package was ");
+    Serial.println(packet);
     packet = 0;
   }
-  __WFE();
+  delay(1000);
+ // __WFE();
+}
 }
