@@ -37,6 +37,7 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
+ #include <stdint.h>
 #ifndef RADIO_CONFIG_H
 #define RADIO_CONFIG_H
 
@@ -53,7 +54,12 @@ extern "C" {
 #define RADIO_TXPOWER_TXPOWER_Neg20dBm (0xECUL) /*!< -20dBm. */
 #define RADIO_TXPOWER_TXPOWER_Neg30dBm (0xD8UL) /*!< -30dBm.*/
 
-void radio_configure(void);
+static uint32_t packet;
+
+void clock_initialization();
+void radio_configure();
+void send_packet(); 
+uint32_t read_packet();
 void set_tx_power(int powerdBm);
 void set_frequency(int band);
 void set_nrf_data_rate(char mode); // RADIO_MODE_MODE_Nrf_250Kbit, RADIO_MODE_MODE_Nrf_1Mbit, RADIO_MODE_MODE_Nrf_2Mbit

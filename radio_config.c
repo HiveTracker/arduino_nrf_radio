@@ -132,6 +132,22 @@ static uint32_t bytewise_bitswap(uint32_t inp)
    hal_nrf_write_tx_payload(payload, PACKET_STATIC_LENGTH);
 
 */
+void clock_initialization()
+{
+  NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
+  NRF_CLOCK->TASKS_HFCLKSTART    = 1;
+  while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0)
+  {
+    // Do nothing.
+  }
+  NRF_CLOCK->LFCLKSRC = (CLOCK_LFCLKSRC_SRC_Xtal << CLOCK_LFCLKSRC_SRC_Pos);
+  NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+  NRF_CLOCK->TASKS_LFCLKSTART    = 1;
+  while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0)
+  {
+  }
+}
+
 void radio_configure()
 {
   // Radio config
@@ -168,6 +184,69 @@ void radio_configure()
     NRF_RADIO->CRCINIT = 0xFFUL;   // Initial value
     NRF_RADIO->CRCPOLY = 0x107UL;  // CRC poly: x^8 + x^2^x^1 + 1
   }
+  NRF_RADIO->PACKETPTR = (uint32_t)&packet;
+}
+
+void send_packet()
+{
+  // send the packet:
+  NRF_RADIO->EVENTS_READY = 0U;
+  NRF_RADIO->TASKS_TXEN   = 1;
+
+  while (NRF_RADIO->EVENTS_READY == 0U)
+  {
+    // wait
+  }
+  NRF_RADIO->EVENTS_END  = 0U;
+  NRF_RADIO->TASKS_START = 1U;
+
+  while (NRF_RADIO->EVENTS_END == 0U)
+  {
+    // wait
+  }
+  NRF_RADIO->EVENTS_DISABLED = 0U;
+  // Disable radio
+  NRF_RADIO->TASKS_DISABLE = 1U;
+  while (NRF_RADIO->EVENTS_DISABLED == 0U)
+  {
+    // wait
+  }
+}
+
+uint32_t read_packet()
+{
+  uint32_t result = 0;
+
+  NRF_RADIO->EVENTS_READY = 0U;
+  // Enable radio and wait for ready
+  NRF_RADIO->TASKS_RXEN = 1U;
+
+  while (NRF_RADIO->EVENTS_READY == 0U)
+  {
+  }
+  NRF_RADIO->EVENTS_END = 0U;
+  // Start listening and wait for address received event
+  NRF_RADIO->TASKS_START = 1U;
+
+  // Wait for end of packet or buttons state changed
+  while (NRF_RADIO->EVENTS_END == 0U)
+  {
+    // wait
+  }
+
+  if (NRF_RADIO->CRCSTATUS == 1U)
+  {
+    result = packet;
+  }
+  NRF_RADIO->EVENTS_DISABLED = 0U;
+  // Disable radio
+  NRF_RADIO->TASKS_DISABLE = 1U;
+
+  while (NRF_RADIO->EVENTS_DISABLED == 0U)
+  {
+    // wait
+  }
+  return result;
 }
 
 void set_tx_power(int power)
