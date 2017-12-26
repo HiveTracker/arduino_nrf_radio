@@ -7,6 +7,7 @@
 
 
 #define NRF_SUCCESS 1
+//#define IS_EMMITER 0
 static uint32_t packet;
 
 void send_packet()
@@ -26,7 +27,6 @@ void send_packet()
   {
     // wait
   }
-  Serial.println("The packet was sent");
   NRF_RADIO->EVENTS_DISABLED = 0U;
   // Disable radio
   NRF_RADIO->TASKS_DISABLE = 1U;
@@ -34,6 +34,42 @@ void send_packet()
   {
     // wait
   }
+}
+
+uint32_t read_packet()
+{
+  uint32_t result = 0;
+
+  NRF_RADIO->EVENTS_READY = 0U;
+  // Enable radio and wait for ready
+  NRF_RADIO->TASKS_RXEN = 1U;
+
+  while (NRF_RADIO->EVENTS_READY == 0U)
+  {
+  }
+  NRF_RADIO->EVENTS_END = 0U;
+  // Start listening and wait for address received event
+  NRF_RADIO->TASKS_START = 1U;
+
+  // Wait for end of packet or buttons state changed
+  while (NRF_RADIO->EVENTS_END == 0U)
+  {
+    // wait
+  }
+
+  if (NRF_RADIO->CRCSTATUS == 1U)
+  {
+    result = packet;
+  }
+  NRF_RADIO->EVENTS_DISABLED = 0U;
+  // Disable radio
+  NRF_RADIO->TASKS_DISABLE = 1U;
+
+  while (NRF_RADIO->EVENTS_DISABLED == 0U)
+  {
+    // wait
+  }
+  return result;
 }
 
 void clock_initialization()
@@ -74,12 +110,18 @@ void loop()
   packet = millis();
   if (packet != 0)
   {
+#ifdef IS_EMMITER
     send_packet();
     Serial.print("The contents of the package was ");
     Serial.println(packet);
     packet = 0;
+    delay(1000);
+#else
+    uint32_t received = read_packet();
+    Serial.print("Received packet ");
+    Serial.print(received, HEX);
+    Serial.print(" ");
+    Serial.println(received, BIN);
+#endif
   }
-  delay(1000);
- // __WFE();
-}
 }
