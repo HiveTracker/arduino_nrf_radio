@@ -44,13 +44,22 @@
 extern "C" {
 #endif
 
-
-#define PACKET_BASE_ADDRESS_LENGTH  (4UL)                   //!< Packet base address length field size in bytes
-#define PACKET_STATIC_LENGTH        (4UL)                   //!< Packet static length in bytes
-#define PACKET_PAYLOAD_MAXSIZE      (PACKET_STATIC_LENGTH)  //!< Packet payload maximum size in bytes
+#define RADIO_TXPOWER_TXPOWER_Pos4dBm  (0x04UL) /*!< +4dBm. */
+#define RADIO_TXPOWER_TXPOWER_0dBm     (0x00UL) /*!< 0dBm. */
+#define RADIO_TXPOWER_TXPOWER_Neg4dBm  (0xFCUL) /*!< -4dBm. */
+#define RADIO_TXPOWER_TXPOWER_Neg8dBm  (0xF8UL) /*!< -8dBm. */
+#define RADIO_TXPOWER_TXPOWER_Neg12dBm (0xF4UL) /*!< -12dBm. */
+#define RADIO_TXPOWER_TXPOWER_Neg16dBm (0xF0UL) /*!< -16dBm. */
+#define RADIO_TXPOWER_TXPOWER_Neg20dBm (0xECUL) /*!< -20dBm. */
+#define RADIO_TXPOWER_TXPOWER_Neg30dBm (0xD8UL) /*!< -30dBm.*/
 
 void radio_configure(void);
-
+void set_tx_power(int powerdBm);
+void set_frequency(int band);
+void set_nrf_data_rate(char mode); // RADIO_MODE_MODE_Nrf_250Kbit, RADIO_MODE_MODE_Nrf_1Mbit, RADIO_MODE_MODE_Nrf_2Mbit
+void set_tx_address(int address);
+void set_rx_address(int address);
+void set_packet_config(int address_length, int packet_lenght);
 
 #ifdef __cplusplus
 }
