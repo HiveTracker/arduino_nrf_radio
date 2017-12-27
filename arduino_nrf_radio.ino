@@ -12,7 +12,12 @@ void setup() {
     delay(500);
   }
   delay(500);
-  Serial.println("HELLO");
+  Serial.print("HELLO I AM ");
+#ifdef IS_EMMITER
+  Serial.println("EMMITER");
+#else
+  Serial.print("RECEIVER");
+#endif
   clock_initialization();
   radio_configure();
 }
@@ -24,7 +29,7 @@ void loop()
   {
 #ifdef IS_EMMITER
     send_packet();
-    Serial.print("The contents of the package was ");
+    Serial.print("Sent package ");
     Serial.println(packet);
     packet = 0;
     delay(1000);
