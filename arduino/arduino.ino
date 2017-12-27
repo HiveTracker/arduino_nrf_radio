@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-//#define IS_EMMITER 0
+#define IS_EMMITER
 
 void setup() {
   Serial.begin(115200);
