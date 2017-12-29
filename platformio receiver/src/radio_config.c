@@ -187,7 +187,7 @@ void radio_configure()
   NRF_RADIO->PACKETPTR = (uint32_t)&packet;
 }
 
-void send_packet()
+void send_packet(uint32_t value)
 {
   // send the packet:
   NRF_RADIO->EVENTS_READY = 0U;
@@ -292,4 +292,3 @@ void set_packet_config(int address_length, int packet_lenght)
                      (packet_lenght         << RADIO_PCNF1_STATLEN_Pos) |
                      (packet_lenght       << RADIO_PCNF1_MAXLEN_Pos); //lint !e845 "The right argument to operator '|' is certain to be 0"
 }
-
