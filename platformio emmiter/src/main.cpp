@@ -8,6 +8,7 @@
 #define IS_EMMITER
 #define LED 5
 
+int count = 0;
 void blink()
 {
   digitalWrite(LED,HIGH);
@@ -27,7 +28,7 @@ void setup() {
 
 void loop()
 {
-  send_packet(random(255));
+  send_packet(count++);
   blink();
   delay(1000);
   blink();
